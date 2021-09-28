@@ -26,13 +26,11 @@ captions_file_location = os.path.join(dir_name, args.captions_location)
 
 ########################### </ file paths > ###########################
 
-
 ####################### < parse captions file > #######################
-print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
+
 captions_file = open(captions_file_location, 'r', encoding='utf-8')
 captions_content = captions_file.readlines()
 
-bad_captions = []
 for num,row in enumerate(captions_content):
   image_name = row[:row.find('#')].strip().lower()
   image_caption = row[row.find('#')+2:].strip().lower()
@@ -110,11 +108,39 @@ for num,row in enumerate(captions_content):
   image_caption = image_caption.replace('the player from the miami dolphins tries to tackle the l.a. raider .', 'the player tries to tackle the opponent .')
   image_caption = image_caption.replace('with a " do not tread on me " flag and a sign that says " Thank you U.S. Troops . "', 'with a flag and a sign .')
   image_caption = image_caption.replace('other guy the number " o " as this what they do for a living .', 'other guy .')
+  image_caption = image_caption.replace('and appears to be speaking about nursing idol steven dr robert harry taylor who is sitting next to her ', '')
   image_caption = image_caption.replace('s.c.u.b.a.', 'scuba')
+
+  image_caption = image_caption.replace('it seems there dr pepper soda', 'it seems there is soda')
+  image_caption = image_caption.replace('seems to me', 'it')
+  image_caption = image_caption.replace('man in dr pepper logo shirt laying', 'Man laying')
+  image_caption = image_caption.replace('in a dr. pepper t-shirt', 'in a t-shirt')
+  image_caption = image_caption.replace('building called mr bagel \'s that', 'building that')
+  image_caption = image_caption.replace('building named mr bagel \'s', 'building')
+  image_caption = image_caption.replace('wow ! this book is good , have get comfortable to read it .', 'a young girl reading a book on the couch')
+  image_caption = image_caption.replace('whoa ! the cowboy is underneath', 'the cowboy is underneath')
+  image_caption = image_caption.replace('on that says frog ! stands', 'on stands')
+  image_caption = image_caption.replace('backseat that says jouez la carta de frete ! on', 'backseat on')
+  image_caption = image_caption.replace('a pop ! tech event', 'an event')
+  image_caption = image_caption.replace('you , too,can achieve financial freedom after listening carefully to this presentation', 'a woman is giving a presentation')
+  image_caption = image_caption.replace('at a berlin,germany train', 'at a train')
+  image_caption = image_caption.replace('two men,one', 'two men , one')
+  image_caption = image_caption.replace('this man is a union employee making 95,000 a year mopping floors for the government .', 'this man is mopping the floors of the building .')
+  image_caption = image_caption.replace('in long coat,grey slacks', 'in a long coat , grey slacks ,')
+  image_caption = image_caption.replace('plastic bib,girl', 'plastic bib ; girl')
+  image_caption = image_caption.replace('check for 10,000 dollars .', 'check .')
+  image_caption = image_caption.replace('t.v.', 'tv')
+  image_caption = image_caption.replace('over # 5 \'s head ', 'over another player \'s head')
+  image_caption = image_caption.replace('a uh football player , # 15 , stands', 'a football player stands')
+  image_caption = image_caption.replace('market shortly before 2 o\'clock in the afternoon ,', 'market ,')
+  image_caption = image_caption.replace('hair and a five o\'clock shadow is', 'hair is')
+  image_caption = image_caption.replace('watch that appears to be about 7 o\'clock is', 'watch is')
+
   image_caption = image_caption.replace('in washington d.c.', '')
   image_caption = image_caption.replace('in washington dc', '')
   image_caption = image_caption.replace('mr. t ', '')
   image_caption = image_caption.replace('base .a group', 'base')
+  image_caption = image_caption.replace('a .group of', 'a group of')
   image_caption = image_caption.replace('john a. noble', 'a')
   image_caption = image_caption.replace('joseph a. bank', 'a')
   image_caption = image_caption.replace('..asian food court', '; asian food court')
@@ -138,6 +164,7 @@ for num,row in enumerate(captions_content):
   image_caption = image_caption.replace('prince st. ', '')
   image_caption = image_caption.replace('prince st ', '')
   image_caption = image_caption.replace('that says e.s.e. electronics ', '')
+  image_caption = image_caption.replace('e.s.e. electronics ', '')
   image_caption = image_caption.replace('india inc. ', '')
   image_caption = image_caption.replace('for l. vaggi ', '')
   image_caption = image_caption.replace('promoting dr. faustus ', '')
@@ -150,7 +177,6 @@ for num,row in enumerate(captions_content):
   image_caption = image_caption.replace('fire dept . ', '')
   image_caption = image_caption.replace('for miami u. ', '')
   image_caption = image_caption.replace('u. miami ', '')
-  image_caption = image_caption.replace('corp. ', '')
   image_caption = image_caption.replace('el pub restaurant.com ', '')
   image_caption = image_caption.replace('j.p. morgan corporate ', '')
   image_caption = image_caption.replace('by j.p. morgan chase with security ', '')
@@ -160,15 +186,23 @@ for num,row in enumerate(captions_content):
   image_caption = image_caption.replace('laura a. large ', '')  
   image_caption = image_caption.replace('dr. seuss ', '')
   image_caption = image_caption.replace(' . a g', '')
+  image_caption = image_caption.replace('that says rocks.', '')
+  image_caption = image_caption.replace('a woman with .', '')
+  image_caption = image_caption.replace(' for sudan.', '')
+  image_caption = image_caption.replace('courtesy of shell corporation of america ', '')
+  image_caption = image_caption.replace('red khera transport corp. truck', 'red truck')
+  image_caption = image_caption.replace('driver for khera transport corp. makes', 'driver makes')
+  image_caption = image_caption.replace('red semi-truck of khera transport corp', 'red semi-truck')
+  image_caption = image_caption.replace('semi truck', 'truck')
+  image_caption = image_caption.replace('semi-truck', 'truck')
+  image_caption = image_caption.replace('drums from america \'s corp fort lewis , washington while', 'drums while')
+  image_caption = image_caption.replace('drums labeled fort lewis , washington', 'drums')
+  image_caption = image_caption.replace('us army', 'army')
+  image_caption = image_caption.replace('grass-covered', 'grass covered')
+  image_caption = image_caption.replace('a blue-colored racing sailboat sporting the number 5 and oracle corporate logos is sailing', 'a blue colored sailboat is sailing')
+  image_caption = image_caption.replace('men recreating an ancient fife and drum corps from the american revolutionary war are marching in a modern parade while wearing white wigs , black tricorn hats , white waistcoats , and white knickers or knee breeches .', 'men are marching in a parade while wearing white wigs , black hats , and white pants .')
 
-
-
-
-
-
-
-
-  # remove quotes 
+  # pattern substitution using regex
   image_caption = re.sub(r' (after saying ,|that say ,|that says ,|which reads ,|that reads ,|that read ,|that states ,|with the phrase ,) ("(.*)"|\'(.*)\')', '', image_caption)
   image_caption = re.sub(r' (saying ,|that says|that reads|reading|marked|that states|named|called the|that is labeled|labeled a|of which say|that all say|with the phrase|entitled) ("(.*)"|\'(.*)\')', '', image_caption)
   image_caption = re.sub(r' (saying|that say|labeled|called|reads|that read|which say|titled) ("(.*)"|\'(.*)\')', '', image_caption)
@@ -197,12 +231,12 @@ for num,row in enumerate(captions_content):
   image_caption = re.sub(r' \$.*\d ', ' money ', image_caption)
   image_caption = re.sub(r'\w*\.com ', '', image_caption)
   image_caption = re.sub(r'\. (?!claus)([a-z]*) \.', '.', image_caption)
-
-
+  image_caption = re.sub(r'#(| )\d+', '', image_caption)
 
   image_caption = re.sub(r' (that says|that say|that reads) \w* \.', ' .', image_caption)
   image_caption = re.sub(r' (that says|that say|that reads) \w* \w* \.', ' .', image_caption)
 
+  image_caption = image_caption.replace(' . ', ' ; ')
 
   # if no period at the end of the sentence, add one
   image_caption = image_caption.strip()
@@ -210,11 +244,8 @@ for num,row in enumerate(captions_content):
 
   # remove double spaces
   image_caption = re.sub(r'  ', ' ', image_caption).strip()
-
-  if (image_caption.find('.') < len(image_caption)-1):
-    print(image_name[-8:], image_caption)
   
-  # print(image_name[-8:], image_caption)
+  print(image_name[-8:], image_caption)
 
 
 ###################### </ parse captions file > #######################
