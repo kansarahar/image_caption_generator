@@ -2,6 +2,7 @@ import os
 import argparse
 
 import re
+import pickle
 
 ############################## < args > ###############################
 
@@ -11,26 +12,23 @@ parser.add_argument('--captions_location', dest='captions_location', type=str, d
 
 args = parser.parse_args()
 
-############################## </ args > ##############################
-
 ########################### < file paths > ############################
 
 dir_name = os.path.dirname(os.path.abspath(__file__))
 
 # directory where models will be stored
-os.makedirs(os.path.join(dir_name, 'preprocessed_data'), exist_ok=True)
-preprocessed_data_path = os.path.join(dir_name, 'preprocessed_data')
+os.makedirs(os.path.join(dir_name, 'processed_caption_data'), exist_ok=True)
+processed_caption_data_path = os.path.join(dir_name, 'processed_caption_data')
 
 # dataset paths
 captions_file_location = os.path.join(dir_name, args.captions_location)
-
-########################### </ file paths > ###########################
 
 ####################### < parse captions file > #######################
 
 captions_file = open(captions_file_location, 'r', encoding='utf-8')
 captions_content = captions_file.readlines()
 
+img2captions = {}
 for num,row in enumerate(captions_content):
   image_name = row[:row.find('#')].strip().lower()
   image_caption = row[row.find('#')+2:].strip().lower()
@@ -47,6 +45,7 @@ for num,row in enumerate(captions_content):
   image_caption = image_caption.replace('.` ', '')
   image_caption = image_caption.replace('` ', ' \'')
   image_caption = image_caption.replace('etc.', 'etc')
+  image_caption = image_caption.replace(' ans ', ' and ')
   image_caption = image_caption.replace('g ?uys', 'guys')
   image_caption = image_caption.replace(' : ', ' ; ')
   image_caption = image_caption.replace(' st .', ' st')
@@ -89,6 +88,8 @@ for num,row in enumerate(captions_content):
   image_caption = image_caption.replace('weas the number 28 and black', 'wears black')
   image_caption = image_caption.replace('number 28 slides', 'a player slides')
   image_caption = image_caption.replace('jersey number 28', 'jersey')
+  image_caption = image_caption.replace('cross west 23rd street', 'cross the street')
+
 
   image_caption = image_caption.replace('i do n\'t see a picture i do n\'t see a picture i do n\'t see a picture .', 'a woman holds her head as she is making a phone call .')
   image_caption = image_caption.replace('i do n\'t see a picture i do n\'t see a picture i do n\'t see a picture i do n\'t see a picture .', 'three men sitting on stair steps talking to each other .')
@@ -130,7 +131,7 @@ for num,row in enumerate(captions_content):
   image_caption = image_caption.replace('plastic bib,girl', 'plastic bib ; girl')
   image_caption = image_caption.replace('check for 10,000 dollars .', 'check .')
   image_caption = image_caption.replace('t.v.', 'tv')
-  image_caption = image_caption.replace('over # 5 \'s head ', 'over another player \'s head')
+  image_caption = image_caption.replace('over # 5 \'s head ', 'over another player \'s head ')
   image_caption = image_caption.replace('a uh football player , # 15 , stands', 'a football player stands')
   image_caption = image_caption.replace('market shortly before 2 o\'clock in the afternoon ,', 'market ,')
   image_caption = image_caption.replace('hair and a five o\'clock shadow is', 'hair is')
@@ -201,6 +202,24 @@ for num,row in enumerate(captions_content):
   image_caption = image_caption.replace('grass-covered', 'grass covered')
   image_caption = image_caption.replace('a blue-colored racing sailboat sporting the number 5 and oracle corporate logos is sailing', 'a blue colored sailboat is sailing')
   image_caption = image_caption.replace('men recreating an ancient fife and drum corps from the american revolutionary war are marching in a modern parade while wearing white wigs , black tricorn hats , white waistcoats , and white knickers or knee breeches .', 'men are marching in a parade while wearing white wigs , black hats , and white pants .')
+  image_caption = image_caption.replace('at the atms', 'at the atm')
+  image_caption = image_caption.replace('money our of an atm', 'money out of an atm')
+  image_caption = image_caption.replace('washington mutual atms', 'the atm')
+  image_caption = image_caption.replace('using washington mutual atm machines', 'using the atm')
+  image_caption = image_caption.replace('atm machines', 'atm')
+  image_caption = image_caption.replace('atm machine', 'atm')
+  image_caption = image_caption.replace('ba tangles', 'be tangled')
+  image_caption = image_caption.replace('cheer at the 2007 uefa under-21 football championship in the netherlands', 'cheer')
+  image_caption = image_caption.replace('marathon , runner 721 and 5132 are the leaders', 'marathon')
+  image_caption = image_caption.replace('yellow , number 21 jersey', 'yellow jersey')
+  image_caption = image_caption.replace('Number 21 slides into second base as number 4 runs', 'one player slides into second base as another runs')
+  image_caption = image_caption.replace('two forever 21 bags', 'two bags')
+  image_caption = image_caption.replace('wearing a shirt with number 32', 'wearing a shirt')
+  image_caption = image_caption.replace('wearing a shirt with number 96', 'wearing a shirt')
+  image_caption = image_caption.replace('showing lafayette player number 32 and penn state player number 23', 'showing two players')
+  image_caption = image_caption.replace('number 32 , on the burgundy team is', 'a player on one team is')
+  image_caption = image_caption.replace('player wearing the number 32 and', 'player and')
+  image_caption = image_caption.replace('pillow-fight', 'pillow fight')
 
   # pattern substitution using regex
   image_caption = re.sub(r' (after saying ,|that say ,|that says ,|which reads ,|that reads ,|that read ,|that states ,|with the phrase ,) ("(.*)"|\'(.*)\')', '', image_caption)
@@ -244,8 +263,29 @@ for num,row in enumerate(captions_content):
 
   # remove double spaces
   image_caption = re.sub(r'  ', ' ', image_caption).strip()
-  
-  print(image_name[-8:], image_caption)
 
+  image_caption = '%s%s' % (image_caption[:-1], '--end--')
 
-###################### </ parse captions file > #######################
+  if image_name in img2captions:
+    img2captions[image_name].append(image_caption.split(' '))
+  else:
+    img2captions[image_name] = [image_caption.split(' ')]
+
+######################## < build vocabulary > #########################
+
+word2freq = {}
+for image_name, image_captions in img2captions.items():
+  for caption in image_captions:
+    for word in caption:
+      if word in word2freq:
+        word2freq[word] += 1
+      else:
+        word2freq[word] = 1
+
+word2idx = { item[0]:idx for idx,item in enumerate(word2freq.items()) }
+idx2word = { value:key for key,value in word2idx.items() }
+
+pickle.dump(img2captions, open(os.path.join(processed_caption_data_path, 'img2captions.p'), 'wb'))
+pickle.dump(word2freq, open(os.path.join(processed_caption_data_path, 'word2freq.p'), 'wb'))
+pickle.dump(word2idx, open(os.path.join(processed_caption_data_path, 'word2idx.p'), 'wb'))
+pickle.dump(idx2word, open(os.path.join(processed_caption_data_path, 'idx2word.p'), 'wb'))
